@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#4f46e5"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><title>HYGER Service Desk</title>
+<style>
+:root{--bg:#f3f1ff;--cd:#fff;--ink:#1e1b4b;--mu:#6b7280;--ln:#e5e1f7;--pri:#5b21b6;--ok:#047857;--okb:#d1fae5;--rep:#6d28d9;--repb:#ede9fe;--ret:#be123c;--retb:#ffe4e6;--pe:#b45309;--peb:#fef3c7;--bl:#1d4ed8;--blb:#dbeafe}
+@media(prefers-color-scheme:dark){:root{--bg:#110e24;--cd:#1c1838;--ink:#eeeafc;--mu:#a5a0c8;--ln:#2f2958;--pri:#a78bfa;--ok:#34d399;--okb:#064e3b;--rep:#c4b5fd;--repb:#3b2a73;--ret:#fda4af;--retb:#5b1230;--pe:#fcd34d;--peb:#53350a;--bl:#93c5fd;--blb:#1e3a6e}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,"Segoe UI",Roboto,sans-serif;padding-bottom:90px}
+.hd{background:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#db2777);color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 48px;border-radius:0 0 26px 26px}
+.hd h1{font-size:21px;margin:0}.sub{font-size:12px;color:var(--mu)}.hd .sub{color:#ffffffcc}
+.st{display:flex;gap:8px;overflow-x:auto;padding:4px 14px 8px;margin-top:-36px}
+.st button{flex:none;min-width:88px;border:0;border-top:4px solid var(--c);border-radius:14px;padding:8px 12px;text-align:left;font:inherit;background:var(--cd);color:var(--ink);box-shadow:0 3px 10px #4c1d9524}
+.st b{display:block;font-size:22px;color:var(--c)}.st small{color:var(--mu)}.st button.on{background:var(--c)}.st button.on b,.st button.on small{color:#fff}
+.tb{display:flex;gap:8px;padding:2px 14px 6px}input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:10px}
+input:focus,select:focus,textarea:focus{outline:2px solid #7c3aed55;border-color:#7c3aed}
+.c{display:flex;gap:10px;align-items:flex-start;background:var(--cd);border-left:5px solid var(--c);border-radius:14px;margin:8px 14px;padding:10px 12px;box-shadow:0 2px 8px #4c1d9514}
+.ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px}.mn{flex:1;min-width:0}
+.t{display:flex;gap:6px;align-items:center}.t span{color:var(--mu);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s{color:var(--mu);font-size:13px;margin-top:2px}.g{margin-top:4px}
+.b{font-style:normal;font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;margin-right:4px;display:inline-block;white-space:nowrap}
+.b.ok{background:var(--okb);color:var(--ok)}.b.rep{background:var(--repb);color:var(--rep)}.b.ret{background:var(--retb);color:var(--ret)}.b.pe{background:var(--peb);color:var(--pe)}.b.bl{background:var(--blb);color:var(--bl)}
+.ok{color:var(--ok)}.rep{color:var(--rep)}.ret{color:var(--ret)}.pe{color:var(--pe)}
+.em{text-align:center;color:var(--mu);padding:34px 14px}
+.fab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom,0px));background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:0;border-radius:28px;padding:14px 20px;font-family:inherit;font-weight:700;font-size:15px;box-shadow:0 6px 16px #7c3aed66}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--cd);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;color:var(--mu);padding:8px 0 9px;font-family:inherit;font-weight:600;font-size:12px}nav button span{display:block;font-size:20px}nav button.on{color:var(--pri);box-shadow:inset 0 3px 0 #7c3aed}
+.m{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:5}.m.o{display:flex}
+.sh{background:var(--bg);width:100%;max-height:94%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+label{display:block;font-size:12px;color:var(--mu);margin:10px 0 3px}.r2{display:flex;gap:8px}.r2>div{flex:1}
+.bt{border:0;border-radius:12px;padding:12px;font-family:inherit;font-weight:700;font-size:14px;color:#fff;width:100%;margin-top:8px}
+.bp{background:linear-gradient(135deg,#4f46e5,#7c3aed)}.bo{background:#059669}.br{background:#7c3aed}.bs{background:#e11d48}.bg{background:var(--ln);color:var(--ink)}.mr{width:auto;display:block;margin:10px auto;padding:10px 22px}
+.tip{background:var(--cd);border-left:4px solid #7c3aed;border-radius:10px;padding:8px 10px;margin:10px 0;font-size:13px}
+.bn{margin:0 14px 4px;padding:8px 12px;border-radius:12px;background:var(--peb);color:var(--pe);font-size:13px;font-weight:600}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--ln);font-size:14px}.kv span{color:var(--mu)}.kv b{text-align:right;font-weight:600}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 6px 0}.kp{background:var(--cd);border-radius:14px;border-top:4px solid var(--c);padding:10px 12px;box-shadow:0 2px 8px #4c1d9514}.kp b{display:block;font-size:24px;color:var(--c)}.kp small{color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--cd);border-radius:12px;overflow:hidden}th,td{padding:7px 6px;border-bottom:1px solid var(--ln);text-align:center}th:first-child,td:first-child{text-align:left}th{font-size:12px}
+h3{margin:18px 6px 8px;font-size:15px}.rp{padding:0 8px}.bar{display:flex;height:5px;border-radius:5px;overflow:hidden;background:var(--ln);margin-top:4px}.bar i{display:block}
+</style></head><body>
+<div class="hd"><h1>🛠️ HYGER Service Desk</h1><div class="sub">Track service, replacement and sales return</div></div>
+<div id="v1"><div class="st" id="st"></div><div class="tb"><input id="q" placeholder="Search name, serial, city…" oninput="DB()"><select id="fp" onchange="LIM=40;L()" style="width:44%"></select></div><div id="bn"></div><div id="lst"></div><button class="fab" onclick="F0()">＋ New Item</button></div>
+<div id="v2" style="display:none" class="rp"></div>
+<nav><button id="n1" class="on" onclick="tab(1)"><span>📋</span>Items</button><button id="n2" onclick="tab(2)"><span>📊</span>Report</button><button onclick="BK()"><span>💾</span>Backup</button></nav>
+
+<div class="m" id="mf"><div class="sh"><b id="ft">New item received</b>
+<div class="r2"><div><label>Date received</label><input type="date" id="fD"></div><div><label>Product</label><select id="fP"></select></div></div>
+<div class="r2"><div><label>Model</label><input id="fM"></div><div><label>Serial no.</label><input id="fS"></div></div>
+<div class="r2"><div><label>Received from</label><select id="fF" onchange="FF()"><option>Dealer</option><option>Customer</option></select></div><div><label>City</label><input id="fC"></div></div>
+<label id="ldl">Dealer name</label><input id="fDl" list="dlL" oninput="DA()"><datalist id="dlL"></datalist>
+<div id="cu"><div class="r2"><div><label>Customer name</label><input id="fCu"></div><div><label>Mobile</label><input id="fMo" inputmode="tel"></div></div></div>
+<div class="r2"><div><label>Purchase date (for warranty)</label><input type="date" id="fB"></div></div>
+<label>Problem / fault</label><textarea id="fPr" rows="2"></textarea><label>Remark</label><input id="fRm"><input type="hidden" id="fId">
+<button class="bt bp" onclick="FS(0)">Save</button><button class="bt bg" id="fn" onclick="FS(1)">Save + next item from same party</button><button class="bt bg" onclick="X('mf')">Close</button></div></div>
+
+<div class="m" id="md"><div class="sh" id="dt"></div></div>
+<div class="m" id="me"><div class="sh"><b id="et"></b><label>Exit date</label><input type="date" id="eD"><div id="en"><label>New serial issued</label><input id="eS"></div><label>Transport / LR / credit note</label><input id="eT"><label>Remark</label><input id="eR"><button class="bt bp" onclick="ES()">Save exit</button><button class="bt bg" onclick="X('me')">Back</button></div></div>
+<div class="m" id="mb"><div class="sh"><b>💾 Backup</b><div class="sub" id="bi" style="margin-top:4px"></div><div class="sub">Data lives in this phone’s browser. Download a backup file regularly and keep it somewhere safe.</div>
+<button class="bt bp" onclick="DX()">⬇ Download Excel file (CSV)</button><button class="bt bo" onclick="DJ()">⬇ Download backup file</button>
+<label>Restore from a backup file</label><input type="file" accept=".json,.txt" onchange="RF(this)">
+<label>Or copy / paste backup text</label><textarea id="bx" rows="4"></textarea>
+<button class="bt bg" onclick="CP(1)">Copy for Excel</button><button class="bt bg" onclick="CP(0)">Copy backup text</button><button class="bt bg" onclick="RS()">Restore from text box</button><button class="bt bg" onclick="X('mb')">Close</button></div></div>
+<script>
+const $=i=>document.getElementById(i),X=i=>$(i).classList.remove('o'),O=i=>$(i).classList.add('o');
+const T=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const PR=['LED','TV','COOLER','WASHING MACHINE','INDUCTION','FAN'],EM={LED:'📺',TV:'📺',COOLER:'❄️','WASHING MACHINE':'🧺',INDUCTION:'🔥',FAN:'🌀'},PC={LED:'#6366f1',TV:'#3b82f6',COOLER:'#06b6d4','WASHING MACHINE':'#0ea5e9',INDUCTION:'#f97316',FAN:'#14b8a6'},WM=12; // warranty months (all products)
+const SC={pending:'#f59e0b',Serviced:'#10b981',Replacement:'#8b5cf6','Sales Return':'#f43f5e',all:'#3b82f6'};
+let R=[];try{R=JSON.parse(localStorage.getItem('hsv')||'[]')}catch(e){}
+let SI=new Map,RM=null,warned=0,F='pending',cur=null,keep=null,LIM=40,tm,RX={};
+const sv=()=>{SI.clear();RM=null;try{localStorage.setItem('hsv',JSON.stringify(R))}catch(e){if(!warned++)alert('Phone storage is full! Open Backup and download a backup now so you do not lose data.')}};
+const MK=()=>{try{localStorage.setItem('hsv_bk',T())}catch(e){}};
+const D=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const C={Serviced:'ok',Replacement:'rep','Sales Return':'ret'},age=r=>D(r.inD,r.outD||T()),dy=n=>n+(n==1?' day':' days');
+const si=r=>{let s=SI.get(r.id);if(s==null){s=[r.p,r.m,r.sn,r.dl,r.cu,r.mo,r.city,r.pr,r.rm,r.out,r.inD].join(' ').toLowerCase();SI.set(r.id,s)}return s};
+const rep=r=>{if(!r.sn)return 0;if(!RM){RM={};R.forEach(x=>{if(x.sn){const k=x.sn.toLowerCase();RM[k]=(RM[k]||0)+1}})}return RM[r.sn.toLowerCase()]-1};
+function war(r){if(!r.buy)return null;const e=new Date(r.buy);e.setMonth(e.getMonth()+WM);return new Date(r.inD)<=e}
+// LOGIC: DOA -> repeat -> warranty
+function sug(r){const n=rep(r);
+ if(r.buy&&D(r.buy,r.inD)<=15)return 'DOA: failed within 15 days of purchase. Replacement or Sales Return applies.';
+ if(n>=2)return 'This serial has come in '+(n+1)+' times. Replacement is better than repeated service.';
+ if(war(r)===false)return 'Warranty expired. Paid service.';
+ if(war(r))return 'Under warranty. Free service.';
+ return 'Purchase date not entered, warranty unknown.'}
+function DB(){clearTimeout(tm);tm=setTimeout(()=>{LIM=40;L()},180)}
+function L(){
+ const c={pending:0,all:R.length};R.forEach(r=>{const k=r.out||'pending';c[k]=(c[k]||0)+1});
+ $('st').innerHTML=[['pending','Pending'],['Serviced','Serviced'],['Replacement','Replacement'],['Sales Return','Sales Return'],['all','All']].map(a=>`<button class="${F==a[0]?'on':''}" style="--c:${SC[a[0]]}" onclick="F='${a[0]}';LIM=40;L()"><b>${c[a[0]]||0}</b><small>${a[1]}</small></button>`).join('');
+ let lb=null;try{lb=localStorage.getItem('hsv_bk')}catch(e){}const ds=lb?D(lb,T()):null;
+ $('bn').innerHTML=R.length&&(ds==null||ds>=7)?`<div class="bn" onclick="BK()">💾 Last backup: ${ds==null?'never':dy(ds)+' ago'}. Tap to back up.</div>`:'';
+ const q=$('q').value.toLowerCase().trim(),p=$('fp').value;
+ const a=R.filter(r=>(F=='all'||(F=='pending'?!r.out:r.out==F))&&(!p||r.p==p)&&(!q||si(r).includes(q))).sort((x,y)=>(y.inD>x.inD)-(y.inD<x.inD)||y.id-x.id);
+ $('lst').innerHTML=a.slice(0,LIM).map(r=>{const w=war(r),n=rep(r),d=age(r),col=r.out?SC[r.out]:d<=7?'#10b981':d<=15?'#f59e0b':'#f43f5e';
+ return `<div class="c" style="--c:${col}" onclick="det(${r.id})"><div class="ic" style="background:${PC[r.p]||'#7c3aed'}22">${EM[r.p]||'📦'}</div><div class="mn"><div class="t"><b>${esc(r.p)}</b><span>${esc(r.m)}</span></div>
+<div class="s">${esc(r.sn||'no serial')} · ${r.f=='Dealer'?'Dealer: '+esc(r.dl):'Customer: '+esc(r.cu)+(r.dl?' (dealer '+esc(r.dl)+')':'')} · ${esc(r.city)}</div>
+<div class="g">${w===true?'<i class="b ok">Warranty</i>':w===false?'<i class="b ret">Out of warranty</i>':''}${n?'<i class="b rep">Repeat ×'+n+'</i>':''}${!r.out&&d>15?'<i class="b ret">Overdue</i>':''}</div></div><i class="b ${r.out?C[r.out]:d<=7?'ok':d<=15?'pe':'ret'}" style="margin:0">${r.out||dy(d)}</i></div>`}).join('')
+ +(a.length>LIM?`<button class="bt bg mr" onclick="LIM+=40;L()">Show more (${a.length-LIM} remaining)</button>`:'')
+ ||'<div class="em">No items found.<br>Tap ＋ New Item to add one.</div>'}
+function tab(n){$('v1').style.display=n==1?'':'none';$('v2').style.display=n==2?'':'none';$('n1').className=n==1?'on':'';$('n2').className=n==2?'on':'';if(n==2)RP();else L()}
+function FF(){const d=$('fF').value=='Dealer';$('ldl').textContent=d?'Dealer name':'Bought from which dealer (if known)';$('cu').style.display=d?'none':''}
+function DA(){const v=$('fDl').value.trim().toLowerCase(),m=R.find(r=>r.dl&&r.dl.toLowerCase()==v);if(m&&!$('fC').value)$('fC').value=m.city}
+function F0(id){const r=id?R.find(x=>x.id==id):null,k=keep||{};X('md');
+ $('dlL').innerHTML=[...new Set(R.map(r=>r.dl).filter(Boolean))].map(x=>`<option value="${esc(x)}">`).join('');
+ $('fP').innerHTML=PR.map(p=>`<option>${p}</option>`).join('');$('ft').textContent=r?'Edit item':'New item received';$('fId').value=r?r.id:'';
+ $('fD').value=r?r.inD:T();$('fP').value=r?r.p:PR[0];$('fM').value=r?r.m:'';$('fS').value=r?r.sn:'';$('fF').value=r?r.f:k.f||'Dealer';$('fC').value=r?r.city:k.city||'';
+ $('fDl').value=r?r.dl:k.dl||'';$('fCu').value=r?r.cu:k.cu||'';$('fMo').value=r?r.mo:k.mo||'';$('fB').value=r?r.buy:'';$('fPr').value=r?r.pr:'';$('fRm').value=r?r.rm:'';
+ $('fn').style.display=r?'none':'';keep=null;FF();O('mf')}
+function FS(nx){const g=i=>$(i).value.trim(),f=g('fF');
+ if(!g('fC'))return alert('Please enter the city');if(f=='Dealer'&&!g('fDl'))return alert('Please enter the dealer name');if(f=='Customer'&&!g('fCu'))return alert('Please enter the customer name');
+ const o={inD:g('fD')||T(),p:g('fP'),m:g('fM'),sn:g('fS'),f,city:g('fC'),dl:g('fDl'),cu:f=='Customer'?g('fCu'):'',mo:f=='Customer'?g('fMo'):'',buy:g('fB'),pr:g('fPr'),rm:g('fRm')};
+ if(g('fId'))Object.assign(R.find(x=>x.id==g('fId')),o);else R.push({id:Date.now(),...o});
+ sv();X('mf');if(nx){keep=o;F0()}L()}
+function det(id){const r=R.find(x=>x.id==id);cur=r;const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
+ $('dt').innerHTML=`<b style="font-size:17px">${EM[r.p]||'📦'} ${esc(r.p)} ${esc(r.m)}</b>
+${kv('Serial',esc(r.sn||'-'))}${kv('Received',r.inD+' ('+dy(age(r))+')')}${kv('From',r.f=='Dealer'?'Dealer: '+esc(r.dl):'Customer: '+esc(r.cu)+' '+esc(r.mo))}${r.f!='Dealer'&&r.dl?kv('Dealer',esc(r.dl)):''}${kv('City',esc(r.city))}${kv('Purchased',r.buy||'-')}${kv('Problem',esc(r.pr||'-'))}${r.rm?kv('Remark',esc(r.rm)):''}
+${r.out?`<div class="tip"><b class="${C[r.out]}">${r.out}</b> · ${r.outD}${r.ns?' · New serial: '+esc(r.ns):''}${r.tr?' · '+esc(r.tr):''}${r.xr?' · '+esc(r.xr):''}</div><button class="bt bg" onclick="RO()">Reopen (fix a mistake)</button>`
+:`<div class="tip">${sug(r)}${rep(r)?'<br>This serial has '+rep(r)+' earlier record(s).':''}</div><button class="bt bo" onclick="EX('Serviced')">✅ Repaired &amp; sent back (Serviced)</button><button class="bt br" onclick="EX('Replacement')">🔁 Replacement given</button><button class="bt bs" onclick="EX('Sales Return')">↩️ Sales Return done</button>`}
+<button class="bt bg" onclick="F0(${r.id})">Edit</button><button class="bt bg" onclick="DL()">Delete</button><button class="bt bg" onclick="X('md')">Close</button>`;O('md')}
+function EX(o){cur.pend=o;$('et').textContent='Exit: '+o;$('eD').value=T();$('eS').value='';$('eT').value='';$('eR').value='';$('en').style.display=o=='Replacement'?'':'none';X('md');O('me')}
+function ES(){Object.assign(cur,{out:cur.pend,outD:$('eD').value||T(),ns:$('eS').value.trim(),tr:$('eT').value.trim(),xr:$('eR').value.trim()});delete cur.pend;sv();X('me');L()}
+function RO(){['out','outD','ns','tr','xr'].forEach(k=>delete cur[k]);sv();X('md');L()}
+function DL(){if(confirm('Delete this item permanently?')){R=R.filter(x=>x.id!=cur.id);sv();X('md');L()}}
+function grp(fn){const m={};R.forEach(r=>{const k=fn(r)||'-';const g=m[k]||(m[k]={k,n:0,pe:0,s:0,rp:0,sr:0});g.n++;if(!r.out)g.pe++;else if(r.out=='Serviced')g.s++;else if(r.out=='Replacement')g.rp++;else g.sr++});return Object.values(m).sort((a,b)=>b.n-a.n)}
+function tbl(k,t,fn,flag){const all=grp(fn),a=RX[k]?all:all.slice(0,15);
+ return `<h3>${t}</h3><table><tr><th></th><th>Total</th><th class="pe">Pend</th><th class="ok">Svc</th><th class="rep">Rep</th><th class="ret">Ret</th></tr>${a.map(g=>`<tr><td>${esc(g.k)}${flag&&g.n>=3&&(g.rp+g.sr)/g.n>=.4?' <i class="b ret">Watch</i>':''}<div class="bar">${[[g.pe,'#f59e0b'],[g.s,'#10b981'],[g.rp,'#8b5cf6'],[g.sr,'#f43f5e']].map(x=>`<i style="width:${x[0]/g.n*100}%;background:${x[1]}"></i>`).join('')}</div></td><td><b>${g.n}</b></td><td>${g.pe}</td><td>${g.s}</td><td>${g.rp}</td><td>${g.sr}</td></tr>`).join('')||'<tr><td colspan=6>No data yet</td></tr>'}</table>${all.length>15&&!RX[k]?`<button class="bt bg mr" onclick="RX['${k}']=1;RP()">Show all ${all.length}</button>`:''}`}
+function RP(){const cl=R.filter(r=>r.out&&r.outD),av=cl.length?Math.round(cl.reduce((s,r)=>s+D(r.inD,r.outD),0)/cl.length):0,ov=R.filter(r=>!r.out&&age(r)>15).length,pn=R.filter(r=>!r.out).length;
+ $('v2').innerHTML=`<div class="kg">${[['Total items',R.length,'#3b82f6'],['Pending',pn,'#f59e0b'],['Overdue (over 15 days)',ov,'#f43f5e'],['Avg days to close',av,'#10b981']].map(k=>`<div class="kp" style="--c:${k[2]}"><b>${k[1]}</b><small>${k[0]}</small></div>`).join('')}</div>`
+ +tbl('p','By product',r=>r.p)+tbl('c','By city',r=>(r.city||'').toUpperCase())+tbl('d','By dealer',r=>r.dl||(r.f=='Customer'?'(Direct customer)':'-'),1)+'<div class="sub" style="padding:8px 6px">Watch = 40% or more of that dealer’s items ended in Replacement / Sales Return (minimum 3 items).</div>'}
+function BK(){$('bx').value='';$('bi').textContent=R.length+' items · '+Math.round((localStorage.getItem('hsv')||'').length/1024)+' KB used of about 5000 KB';O('mb')}
+const HD=['Date','Product','Model','Serial','Received from','Dealer','Customer','Mobile','City','Purchased','Problem','Result','Exit date','New serial','Transport','Remark','Days'];
+const RW=()=>[HD,...R.map(r=>[r.inD,r.p,r.m,r.sn,r.f,r.dl,r.cu,r.mo,r.city,r.buy,r.pr,r.out||'Pending',r.outD,r.ns,r.tr,r.xr,age(r)])];
+function DF(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();MK()}
+const DX=()=>DF('hyger-service-'+T()+'.csv','\ufeff'+RW().map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv');
+const DJ=()=>DF('hyger-backup-'+T()+'.json',JSON.stringify(R),'application/json');
+function CP(x){const t=x?RW().map(a=>a.map(v=>String(v??'').replace(/[\t\n]/g,' ')).join('\t')).join('\n'):JSON.stringify(R);
+ $('bx').value=t;$('bx').select();try{navigator.clipboard.writeText(t)}catch(e){try{document.execCommand('copy')}catch(e2){}}MK()}
+function RF(i){const f=i.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{$('bx').value=fr.result;RS()};fr.readAsText(f)}
+function RS(){try{const a=JSON.parse($('bx').value);if(!Array.isArray(a))throw 0;if(confirm(a.length+' items will be restored and current data will be replaced. Sure?')){R=a;sv();X('mb');L()}}catch(e){alert('Please choose a valid backup file or paste valid backup text')}}
+$('fp').innerHTML='<option value="">All products</option>'+PR.map(p=>`<option>${p}</option>`).join('');L();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
