@@ -60,9 +60,18 @@ const $=i=>document.getElementById(i),X=i=>$(i).classList.remove('o'),O=i=>$(i).
 const T=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const PR=['LED','TV','COOLER','WASHING MACHINE','INDUCTION','FAN'],EM={LED:'📺',TV:'📺',COOLER:'❄️','WASHING MACHINE':'🧺',INDUCTION:'🔥',FAN:'🌀'},PC={LED:'#6366f1',TV:'#3b82f6',COOLER:'#06b6d4','WASHING MACHINE':'#0ea5e9',INDUCTION:'#f97316',FAN:'#14b8a6'},WM=12; // warranty months (all products)
 const SC={pending:'#f59e0b',Serviced:'#10b981',Replacement:'#8b5cf6','Sales Return':'#f43f5e',all:'#3b82f6'};
-let R=[];try{R=JSON.parse(localStorage.getItem('hsv')||'[]')}catch(e){}
+let R=[],IDBX=null;
 let SI=new Map,RM=null,warned=0,F='pending',cur=null,keep=null,LIM=40,tm,RX={};
-const sv=()=>{SI.clear();RM=null;try{localStorage.setItem('hsv',JSON.stringify(R))}catch(e){if(!warned++)alert('Phone storage is full! Open Backup and download a backup now so you do not lose data.')}};
+const fail=()=>{if(!warned++)alert('Could not save data! Open Backup and download a backup now so you do not lose data.')};
+const ls=()=>{try{localStorage.setItem('hsv',JSON.stringify(R))}catch(e){fail()}};
+function tx(fn){if(!IDBX)return ls();try{const t=IDBX.transaction('items','readwrite');fn(t.objectStore('items'));t.onerror=t.onabort=fail}catch(e){fail()}}
+const inv=()=>{SI.clear();RM=null},sv=r=>{inv();tx(s=>s.put(r))},dv=id=>{inv();tx(s=>s.delete(id))},sa=()=>{inv();tx(s=>{s.clear();R.forEach(r=>s.put(r))})};
+// Storage: IndexedDB (big). Old localStorage data is copied in once and the old copy is never deleted.
+function initDB(){return new Promise(res=>{let q;try{q=indexedDB.open('hygerservice',1)}catch(e){return res()}
+ q.onupgradeneeded=()=>q.result.createObjectStore('items',{keyPath:'id'});q.onerror=q.onblocked=()=>res();
+ q.onsuccess=()=>{const db=q.result;let old=[];try{if(!localStorage.getItem('hsv_idb'))old=JSON.parse(localStorage.getItem('hsv')||'[]')}catch(e){}
+  try{const t=db.transaction('items','readwrite'),s=t.objectStore('items');if(Array.isArray(old))old.forEach(r=>{if(r&&r.id!=null)s.put(r)});const g=s.getAll();
+   t.oncomplete=()=>{IDBX=db;R=g.result;try{localStorage.setItem('hsv_idb','1')}catch(e){}res()};t.onerror=t.onabort=()=>res()}catch(e){res()}}})}
 const MK=()=>{try{localStorage.setItem('hsv_bk',T())}catch(e){}};
 const D=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const C={Serviced:'ok',Replacement:'rep','Sales Return':'ret'},age=r=>D(r.inD,r.outD||T()),dy=n=>n+(n==1?' day':' days');
@@ -102,8 +111,8 @@ function F0(id){const r=id?R.find(x=>x.id==id):null,k=keep||{};X('md');
 function FS(nx){const g=i=>$(i).value.trim(),f=g('fF');
  if(!g('fC'))return alert('Please enter the city');if(f=='Dealer'&&!g('fDl'))return alert('Please enter the dealer name');if(f=='Customer'&&!g('fCu'))return alert('Please enter the customer name');
  const o={inD:g('fD')||T(),p:g('fP'),m:g('fM'),sn:g('fS'),f,city:g('fC'),dl:g('fDl'),cu:f=='Customer'?g('fCu'):'',mo:f=='Customer'?g('fMo'):'',buy:g('fB'),pr:g('fPr'),rm:g('fRm')};
- if(g('fId'))Object.assign(R.find(x=>x.id==g('fId')),o);else R.push({id:Date.now(),...o});
- sv();X('mf');if(nx){keep=o;F0()}L()}
+ let rc;if(g('fId'))rc=Object.assign(R.find(x=>x.id==g('fId')),o);else{rc={id:Date.now(),...o};R.push(rc)}
+ sv(rc);X('mf');if(nx){keep=o;F0()}L()}
 function det(id){const r=R.find(x=>x.id==id);cur=r;const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
  $('dt').innerHTML=`<b style="font-size:17px">${EM[r.p]||'📦'} ${esc(r.p)} ${esc(r.m)}</b>
 ${kv('Serial',esc(r.sn||'-'))}${kv('Received',r.inD+' ('+dy(age(r))+')')}${kv('From',r.f=='Dealer'?'Dealer: '+esc(r.dl):'Customer: '+esc(r.cu)+' '+esc(r.mo))}${r.f!='Dealer'&&r.dl?kv('Dealer',esc(r.dl)):''}${kv('City',esc(r.city))}${kv('Purchased',r.buy||'-')}${kv('Problem',esc(r.pr||'-'))}${r.rm?kv('Remark',esc(r.rm)):''}
@@ -111,16 +120,16 @@ ${r.out?`<div class="tip"><b class="${C[r.out]}">${r.out}</b> · ${r.outD}${r.ns
 :`<div class="tip">${sug(r)}${rep(r)?'<br>This serial has '+rep(r)+' earlier record(s).':''}</div><button class="bt bo" onclick="EX('Serviced')">✅ Repaired &amp; sent back (Serviced)</button><button class="bt br" onclick="EX('Replacement')">🔁 Replacement given</button><button class="bt bs" onclick="EX('Sales Return')">↩️ Sales Return done</button>`}
 <button class="bt bg" onclick="F0(${r.id})">Edit</button><button class="bt bg" onclick="DL()">Delete</button><button class="bt bg" onclick="X('md')">Close</button>`;O('md')}
 function EX(o){cur.pend=o;$('et').textContent='Exit: '+o;$('eD').value=T();$('eS').value='';$('eT').value='';$('eR').value='';$('en').style.display=o=='Replacement'?'':'none';X('md');O('me')}
-function ES(){Object.assign(cur,{out:cur.pend,outD:$('eD').value||T(),ns:$('eS').value.trim(),tr:$('eT').value.trim(),xr:$('eR').value.trim()});delete cur.pend;sv();X('me');L()}
-function RO(){['out','outD','ns','tr','xr'].forEach(k=>delete cur[k]);sv();X('md');L()}
-function DL(){if(confirm('Delete this item permanently?')){R=R.filter(x=>x.id!=cur.id);sv();X('md');L()}}
+function ES(){Object.assign(cur,{out:cur.pend,outD:$('eD').value||T(),ns:$('eS').value.trim(),tr:$('eT').value.trim(),xr:$('eR').value.trim()});delete cur.pend;sv(cur);X('me');L()}
+function RO(){['out','outD','ns','tr','xr'].forEach(k=>delete cur[k]);sv(cur);X('md');L()}
+function DL(){if(confirm('Delete this item permanently?')){const id=cur.id;R=R.filter(x=>x.id!=id);dv(id);X('md');L()}}
 function grp(fn){const m={};R.forEach(r=>{const k=fn(r)||'-';const g=m[k]||(m[k]={k,n:0,pe:0,s:0,rp:0,sr:0});g.n++;if(!r.out)g.pe++;else if(r.out=='Serviced')g.s++;else if(r.out=='Replacement')g.rp++;else g.sr++});return Object.values(m).sort((a,b)=>b.n-a.n)}
 function tbl(k,t,fn,flag){const all=grp(fn),a=RX[k]?all:all.slice(0,15);
  return `<h3>${t}</h3><table><tr><th></th><th>Total</th><th class="pe">Pend</th><th class="ok">Svc</th><th class="rep">Rep</th><th class="ret">Ret</th></tr>${a.map(g=>`<tr><td>${esc(g.k)}${flag&&g.n>=3&&(g.rp+g.sr)/g.n>=.4?' <i class="b ret">Watch</i>':''}<div class="bar">${[[g.pe,'#f59e0b'],[g.s,'#10b981'],[g.rp,'#8b5cf6'],[g.sr,'#f43f5e']].map(x=>`<i style="width:${x[0]/g.n*100}%;background:${x[1]}"></i>`).join('')}</div></td><td><b>${g.n}</b></td><td>${g.pe}</td><td>${g.s}</td><td>${g.rp}</td><td>${g.sr}</td></tr>`).join('')||'<tr><td colspan=6>No data yet</td></tr>'}</table>${all.length>15&&!RX[k]?`<button class="bt bg mr" onclick="RX['${k}']=1;RP()">Show all ${all.length}</button>`:''}`}
 function RP(){const cl=R.filter(r=>r.out&&r.outD),av=cl.length?Math.round(cl.reduce((s,r)=>s+D(r.inD,r.outD),0)/cl.length):0,ov=R.filter(r=>!r.out&&age(r)>15).length,pn=R.filter(r=>!r.out).length;
  $('v2').innerHTML=`<div class="kg">${[['Total items',R.length,'#3b82f6'],['Pending',pn,'#f59e0b'],['Overdue (over 15 days)',ov,'#f43f5e'],['Avg days to close',av,'#10b981']].map(k=>`<div class="kp" style="--c:${k[2]}"><b>${k[1]}</b><small>${k[0]}</small></div>`).join('')}</div>`
  +tbl('p','By product',r=>r.p)+tbl('c','By city',r=>(r.city||'').toUpperCase())+tbl('d','By dealer',r=>r.dl||(r.f=='Customer'?'(Direct customer)':'-'),1)+'<div class="sub" style="padding:8px 6px">Watch = 40% or more of that dealer’s items ended in Replacement / Sales Return (minimum 3 items).</div>'}
-function BK(){$('bx').value='';$('bi').textContent=R.length+' items · '+Math.round((localStorage.getItem('hsv')||'').length/1024)+' KB used of about 5000 KB';O('mb')}
+function BK(){$('bx').value='';$('bi').textContent=R.length+' items';O('mb');try{navigator.storage.estimate().then(e=>{$('bi').textContent=R.length+' items · '+(e.usage/1048576).toFixed(1)+' MB used of '+Math.round(e.quota/1048576)+' MB available'})}catch(x){}}
 const HD=['Date','Product','Model','Serial','Received from','Dealer','Customer','Mobile','City','Purchased','Problem','Result','Exit date','New serial','Transport','Remark','Days'];
 const RW=()=>[HD,...R.map(r=>[r.inD,r.p,r.m,r.sn,r.f,r.dl,r.cu,r.mo,r.city,r.buy,r.pr,r.out||'Pending',r.outD,r.ns,r.tr,r.xr,age(r)])];
 function DF(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();MK()}
@@ -129,8 +138,9 @@ const DJ=()=>DF('hyger-backup-'+T()+'.json',JSON.stringify(R),'application/json'
 function CP(x){const t=x?RW().map(a=>a.map(v=>String(v??'').replace(/[\t\n]/g,' ')).join('\t')).join('\n'):JSON.stringify(R);
  $('bx').value=t;$('bx').select();try{navigator.clipboard.writeText(t)}catch(e){try{document.execCommand('copy')}catch(e2){}}MK()}
 function RF(i){const f=i.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{$('bx').value=fr.result;RS()};fr.readAsText(f)}
-function RS(){try{const a=JSON.parse($('bx').value);if(!Array.isArray(a))throw 0;if(confirm(a.length+' items will be restored and current data will be replaced. Sure?')){R=a;sv();X('mb');L()}}catch(e){alert('Please choose a valid backup file or paste valid backup text')}}
-$('fp').innerHTML='<option value="">All products</option>'+PR.map(p=>`<option>${p}</option>`).join('');L();
+function RS(){try{const a=JSON.parse($('bx').value);if(!Array.isArray(a))throw 0;if(confirm(a.length+' items will be restored and current data will be replaced. Sure?')){a.forEach((r,i)=>{if(r.id==null)r.id=Date.now()+i});R=a;sa();X('mb');L()}}catch(e){alert('Please choose a valid backup file or paste valid backup text')}}
+$('fp').innerHTML='<option value="">All products</option>'+PR.map(p=>`<option>${p}</option>`).join('');
+initDB().then(()=>{if(!IDBX){try{R=JSON.parse(localStorage.getItem('hsv')||'[]')}catch(e){R=[]}}L()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
