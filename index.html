@@ -36,7 +36,7 @@ h3{margin:18px 6px 8px;font-size:15px}.rp{padding:0 8px}.bar{display:flex;height
 <div class="hd"><h1>🛠️ HYGER Service Desk</h1><div class="sub">Track service, replacement and sales return</div></div>
 <div id="v1"><div class="st" id="st"></div><div class="tb"><input id="q" placeholder="Search name, serial, city…" oninput="DB()"><select id="fp" onchange="LIM=40;L()" style="width:44%"></select></div><div id="bn"></div><div id="lst"></div><button class="fab" onclick="F0()">＋ New Item</button></div>
 <div id="v2" style="display:none" class="rp"></div>
-<nav><button id="n1" class="on" onclick="tab(1)"><span>📋</span>Items</button><button id="n2" onclick="tab(2)"><span>📊</span>Report</button><button onclick="BK()"><span>💾</span>Backup</button></nav>
+<nav><button id="n1" class="on" onclick="tab(1)"><span>📋</span>Items</button><button id="n2" onclick="tab(2)"><span>📊</span>Report</button><button onclick="EXo()"><span>📤</span>Export</button><button onclick="BK()"><span>💾</span>Backup</button></nav>
 
 <div class="m" id="mf"><div class="sh"><b id="ft">New item received</b>
 <div class="r2"><div><label>Date received</label><input type="date" id="fD"></div><div><label>Product</label><select id="fP"></select></div></div>
@@ -50,6 +50,12 @@ h3{margin:18px 6px 8px;font-size:15px}.rp{padding:0 8px}.bar{display:flex;height
 
 <div class="m" id="md"><div class="sh" id="dt"></div></div>
 <div class="m" id="me"><div class="sh"><b id="et"></b><label>Exit date</label><input type="date" id="eD"><div id="en"><label>New serial issued</label><input id="eS"></div><label>Transport / LR / credit note</label><input id="eT"><label>Remark</label><input id="eR"><button class="bt bp" onclick="ES()">Save exit</button><button class="bt bg" onclick="X('me')">Back</button></div></div>
+<div class="m" id="mx"><div class="sh"><b>📤 Export to Excel</b>
+<div class="r2"><div><label>From date</label><input type="date" id="xF" onchange="XC()"></div><div><label>To date</label><input type="date" id="xT" onchange="XC()"></div></div>
+<label>Filter dates by</label><select id="xK" onchange="XC()"><option value="in">Received date</option><option value="out">Exit date</option></select>
+<div class="r2"><div><label>Result</label><select id="xO" onchange="XC()"><option value="">All</option><option value="pending">Pending</option><option>Serviced</option><option>Replacement</option><option>Sales Return</option></select></div><div><label>Product</label><select id="xP" onchange="XC()"></select></div></div>
+<div class="tip" id="xn"></div>
+<button class="bt bp" onclick="XSH(1)">📤 Share (WhatsApp / Drive…)</button><button class="bt bo" onclick="XSH(0)">⬇ Download Excel file</button><button class="bt bg" onclick="X('mx')">Close</button></div></div>
 <div class="m" id="mb"><div class="sh"><b>💾 Backup</b><div class="sub" id="bi" style="margin-top:4px"></div><div class="sub">Data lives in this phone’s browser. Download a backup file regularly and keep it somewhere safe.</div>
 <button class="bt bp" onclick="DX()">⬇ Download Excel file (CSV)</button><button class="bt bo" onclick="DJ()">⬇ Download backup file</button>
 <label>Restore from a backup file</label><input type="file" accept=".json,.txt" onchange="RF(this)">
@@ -131,8 +137,16 @@ function RP(){const cl=R.filter(r=>r.out&&r.outD),av=cl.length?Math.round(cl.red
  +tbl('p','By product',r=>r.p)+tbl('c','By city',r=>(r.city||'').toUpperCase())+tbl('d','By dealer',r=>r.dl||(r.f=='Customer'?'(Direct customer)':'-'),1)+'<div class="sub" style="padding:8px 6px">Watch = 40% or more of that dealer’s items ended in Replacement / Sales Return (minimum 3 items).</div>'}
 function BK(){$('bx').value='';$('bi').textContent=R.length+' items';O('mb');try{navigator.storage.estimate().then(e=>{$('bi').textContent=R.length+' items · '+(e.usage/1048576).toFixed(1)+' MB used of '+Math.round(e.quota/1048576)+' MB available'})}catch(x){}}
 const HD=['Date','Product','Model','Serial','Received from','Dealer','Customer','Mobile','City','Purchased','Problem','Result','Exit date','New serial','Transport','Remark','Days'];
-const RW=()=>[HD,...R.map(r=>[r.inD,r.p,r.m,r.sn,r.f,r.dl,r.cu,r.mo,r.city,r.buy,r.pr,r.out||'Pending',r.outD,r.ns,r.tr,r.xr,age(r)])];
-function DF(n,t,m){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();MK()}
+const RW=(l=R)=>[HD,...l.map(r=>[r.inD,r.p,r.m,r.sn,r.f,r.dl,r.cu,r.mo,r.city,r.buy,r.pr,r.out||'Pending',r.outD,r.ns,r.tr,r.xr,age(r)])];
+function DF(n,t,m,k){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();if(!k)MK()}
+const CS=l=>'\ufeff'+RW(l).map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+const XL=()=>{const f=$('xF').value,t=$('xT').value,k=$('xK').value,o=$('xO').value,p=$('xP').value;
+ return R.filter(r=>{const d=k=='out'?r.outD:r.inD;return(!f||(d&&d>=f))&&(!t||(d&&d<=t))&&(!o||(o=='pending'?!r.out:r.out==o))&&(!p||r.p==p)}).sort((a,b)=>(a.inD>b.inD)-(a.inD<b.inD)||a.id-b.id)};
+function XC(){$('xn').textContent=XL().length+' items match these filters'}
+function EXo(){const t=T();$('xF').value=t.slice(0,8)+'01';$('xT').value=t;$('xP').innerHTML=$('fp').innerHTML;$('xP').value='';XC();O('mx')}
+async function XSH(sh){const l=XL();if(!l.length)return alert('No items in this range');const n='hyger-service-'+($('xF').value||'start')+'_to_'+($('xT').value||'end')+'.csv',tx=CS(l),f=new File([tx],n,{type:'text/csv'});
+ if(sh&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:n});return}catch(e){if(e.name=='AbortError')return}}
+ DF(n,tx,'text/csv',1)}
 const DX=()=>DF('hyger-service-'+T()+'.csv','\ufeff'+RW().map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv');
 const DJ=()=>DF('hyger-backup-'+T()+'.json',JSON.stringify(R),'application/json');
 function CP(x){const t=x?RW().map(a=>a.map(v=>String(v??'').replace(/[\t\n]/g,' ')).join('\t')).join('\n'):JSON.stringify(R);
